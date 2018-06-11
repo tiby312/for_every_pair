@@ -3,7 +3,6 @@ extern crate test;
 use test::*;
 
 
-
 pub fn for_every_pair_iter<T>(mut arr:&mut [T],mut func:impl FnMut(&mut T,&mut T)){
     loop{
     	let temp=arr;
@@ -47,10 +46,11 @@ pub fn for_every_pair_unsafe_impl<T>(arr:&mut [T],mut func:impl FnMut(&mut T,&mu
 
 
 macro_rules! gen_test{
-    ($test:ident,$bench:ident,$function:ident)=>{
-    	#[test]
-    	fn $test(){
-    		let mut k=[0;100];
+	($test:ident,$bench:ident,$function:ident)=>{
+		#[test]
+		fn $test(){
+			let mut k=[0;100];
+
 			$function(&mut k,|a,b|{
 				*a+=1;
 				*b+=1;
@@ -59,23 +59,22 @@ macro_rules! gen_test{
 			for b in k.iter(){
 				assert!(*b==100-1);
 			}
-    	}
+		}
 
-    	#[bench]
-    	fn $bench(bench:&mut Bencher){
-    		let mut k=[0;2000];
+		#[bench]
+		fn $bench(bench:&mut Bencher){
+			let mut k=[0;2000];
 			bench.iter(||{
 				$function(&mut k,|a,b|{
 					*a+=1;
 					*b+=1;
 				})
 			});
-
-
 			black_box(k);
-    	}
-    }
+		}
+	}
 }
+
 gen_test!(iter_test,iter_bench,for_every_pair_iter);
 gen_test!(recc_test,recc_bench,for_every_pair_recc);
 gen_test!(unsafe_test,unsafe_bench,for_every_pair_unsafe_impl);
